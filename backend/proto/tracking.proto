@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package tracking;
+
+message Location {
+  string order_id             = 1;
+  double lat                  = 2;
+  double lng                  = 3;
+  int64  timestamp            = 4;
+  string status               = 5;
+  double remaining_distance_m = 6;
+}
+
+message Summary {
+  int32  points_received = 1;
+  string message         = 2;
+}
+
+message OrderRequest {
+  string order_id = 1;
+}
+
+message Point {
+  double lat  = 1;
+  double lng  = 2;
+  string name = 3;
+}
+
+message Order {
+  string id             = 1;
+  string description    = 2;
+  string courier        = 3;
+  Point  origin         = 4;
+  Point  destination    = 5;
+  string status         = 6;
+  repeated Point route  = 7;
+}
+
+message DestinationRequest {
+  string order_id    = 1;
+  Point  destination = 2;
+}
+
+service Tracking {
+  rpc GetOrder (OrderRequest) returns (Order);
+  rpc SendLocations (stream Location) returns (Summary);
+  rpc TrackOrder (OrderRequest) returns (stream Location);
+  rpc ChangeDestination (DestinationRequest) returns (Order);
+}

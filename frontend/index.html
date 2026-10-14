@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RutaYa · Rastreo con gRPC</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🛵</span>
+      <div>
+        <h1>RutaYa</h1>
+        <p>Rastreo de domicilios en tiempo real con <strong>gRPC</strong></p>
+      </div>
+    </div>
+    <span id="connection" class="chip chip--wait">Conectando con el servidor…</span>
+  </header>
+
+  <main class="content">
+    <section id="map" aria-label="Mapa del recorrido"></section>
+
+    <aside class="panel">
+      <p class="label">Pedido</p>
+      <h2 id="order-id">—</h2>
+      <p id="description" class="muted">Cargando pedido…</p>
+
+      <div class="status">
+        <span id="status" class="badge">ESPERANDO</span>
+      </div>
+
+      <ol class="steps">
+        <li data-step="ON_THE_WAY">En camino</li>
+        <li data-step="NEARBY">Cerca de tu casa</li>
+        <li data-step="DELIVERED">Entregado</li>
+      </ol>
+
+      <div class="stats">
+        <div><p class="label">Distancia</p><p id="distance" class="value">—</p></div>
+        <div><p class="label">Llegada aprox.</p><p id="eta" class="value">—</p></div>
+      </div>
+
+      <p class="label">Entregar en</p>
+      <p id="destination" class="muted">—</p>
+      <button id="use-my-location" class="button">📍 Usar mi ubicación</button>
+      <p id="destination-help" class="help">Pidiendo tu ubicación…</p>
+
+      <p class="label">Repartidor</p>
+      <p id="courier" class="muted">—</p>
+
+      <details class="how">
+        <summary>¿Cómo funciona con gRPC?</summary>
+        <ol>
+          <li><b>Client streaming:</b> el simulador del repartidor envía su ubicación al servidor gRPC cada segundo (<code>SendLocations</code>).</li>
+          <li><b>Server streaming:</b> el servidor gRPC reenvía cada ubicación a quien sigue el pedido (<code>TrackOrder</code>).</li>
+          <li><b>Unaria:</b> los datos del pedido se piden con <code>GetOrder</code>.</li>
+          <li><b>Unaria:</b> tu ubicación (o el punto que elijas) se envía con <code>ChangeDestination</code>; el servidor calcula la ruta por las calles.</li>
+          <li>El navegador recibe todo a través de un gateway Express (SSE), porque los navegadores no hablan gRPC nativo.</li>
+        </ol>
+      </details>
+    </aside>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
